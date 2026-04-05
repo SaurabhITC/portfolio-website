@@ -191,6 +191,49 @@ nav.solid{
 .nav-links a.active{color:var(--ink)}
 .nav-links a.active::after{width:100%;background:var(--gold)}
 
+.mobile-nav-toggle{
+  display:none;
+  width:82px;
+  height:82px;
+  border:1px solid rgba(107,76,42,0.18);
+  background:rgba(242,232,208,0.72);
+  color:var(--sepia);
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:background .25s,border-color .25s,transform .25s;
+}
+.mobile-nav-toggle:hover{background:rgba(242,232,208,0.92);border-color:rgba(107,76,42,0.32)}
+.mobile-nav-toggle svg{width:30px;height:30px;display:block}
+.mobile-nav-panel{
+  display:none;
+  position:fixed;
+  top:68px;
+  left:0;
+  right:0;
+  z-index:490;
+  background:rgba(242,232,208,0.97);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 16px 30px rgba(107,76,42,0.10);
+  padding:1rem 6vw 1.2rem;
+}
+.mobile-nav-panel.is-open{display:block}
+.mobile-nav-links{list-style:none;display:grid;gap:.35rem}
+.mobile-nav-links a{
+  display:block;
+  text-decoration:none;
+  color:var(--sepia);
+  font-family:var(--stamp);
+  font-size:0.78rem;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  padding:.95rem 0;
+  border-bottom:1px solid rgba(107,76,42,0.12);
+}
+.mobile-nav-links a.active{color:var(--ink)}
+
+
 /* generic */
 section{position:relative;z-index:1;padding:5.75rem 8vw;scroll-margin-top:92px}
 section:not(#hero)::before{
@@ -679,25 +722,36 @@ footer{
 @media(max-width:680px){
   .projects-mosaic,.skills-grid,.edu-grid{grid-template-columns:1fr}
   .nav-links{display:none}
-  body{cursor:auto}
+  .mobile-nav-toggle{display:inline-flex}
+  body{cursor:auto;padding-bottom:0}
   #cur,#cur-ring{display:none}
-  section{padding:4.25rem 6vw}
-  #hero{padding:6rem 6vw 3.25rem}
-  .s-title{margin-bottom:1.6rem}
+  section{padding:4.5rem 6vw}
+  .s-title{margin-bottom:1.35rem;font-size:clamp(1.7rem,9vw,2.4rem)}
+  #about{padding-top:5.9rem}
+  .page-intro{margin-bottom:1.55rem}
+  .page-intro-copy{font-size:0.96rem;line-height:1.72}
+  .about-hero{gap:1.7rem}
+  .about-text p{font-size:0.98rem;line-height:1.7}
   .about-stats{grid-template-columns:1fr 1fr}
-  .about-info-item{align-items:flex-start;flex-direction:column}
-  .contact-form-card,.contact-info-card{padding:1.45rem}
-  .contact-page{gap:1.1rem}
-  .contact-banner{padding:1.6rem 1.35rem;min-height:145px}
+  .astat{padding:1.15rem .9rem}
+  .astat-n{font-size:1.8rem}
+  .about-info-item{align-items:flex-start;flex-direction:column;padding:.9rem 1.1rem}
+  .about-card{padding:1.2rem}
+  .about-card-title{margin-bottom:.7rem}
+  .timeline-mini{gap:.75rem}
+  .timeline-note,.about-card-sub,.focus-value{font-size:.86rem;line-height:1.62}
+  .skills-grid,.edu-grid{gap:8px}
+  .edu-card{padding:1.25rem}
+  .skill-group-card{padding:1.05rem}
+  .cert-badge{padding:7px 14px}
+  .contact-banner{padding:1.6rem 1.35rem;min-height:145px;margin-bottom:1.35rem}
   .contact-page-title{font-size:1.9rem}
-  #contact{padding-top:4.9rem;padding-bottom:5.2rem}
-  .site-connect-wrap{padding:0 6vw 1.25rem}
+  .site-connect-wrap{padding:.25rem 6vw 1.1rem}
   .site-connect{padding:1rem 0.9rem 0.95rem}
   .site-connect-icon{width:40px;height:40px}
   .site-connect-icon svg{width:17px;height:17px}
   .site-connect-title{font-size:1rem}
-  body{padding-bottom:86px}
-  footer{padding:1.5rem 6vw}
+  footer{position:relative;padding:1.35rem 6vw}
 }
 
 /* fake multipage views */
@@ -982,7 +1036,22 @@ footer{
 <li><a data-page="projects" href="projects.html">Projects</a></li>
 <li><a data-page="contact" href="contact.html">Contact</a></li>
 </ul>
+<button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobileNavPanel">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<path d="M4 7H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M4 12H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M4 17H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+</svg>
+</button>
 </nav>
+<div class="mobile-nav-panel" id="mobileNavPanel">
+<ul class="mobile-nav-links">
+<li><a data-page="home" href="index.html">Home</a></li>
+<li><a data-page="about" href="about.html">About</a></li>
+<li><a data-page="projects" href="projects.html">Projects</a></li>
+<li><a data-page="contact" href="contact.html">Contact</a></li>
+</ul>
+</div>
 <main>
 <section id="about">
 <div class="section-inner">
@@ -1241,6 +1310,46 @@ if (logoLink) {
   });
 }
 
+const mobileNavToggle = document.getElementById('mobileNavToggle');
+const mobileNavPanel = document.getElementById('mobileNavPanel');
+
+document.querySelectorAll('.mobile-nav-links a[data-page]').forEach(link => {
+  link.classList.toggle('active', link.dataset.page === currentPage);
+  if (link.dataset.page === currentPage) {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      if (mobileNavPanel) mobileNavPanel.classList.remove('is-open');
+      if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'false');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  } else if (homeTargets.has(link.dataset.page)) {
+    link.addEventListener('click', () => {
+      try { sessionStorage.setItem('sb_returning_home', '1'); } catch (error) {}
+    });
+  }
+});
+
+if (mobileNavToggle && mobileNavPanel) {
+  mobileNavToggle.addEventListener('click', () => {
+    const isOpen = mobileNavPanel.classList.toggle('is-open');
+    mobileNavToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.addEventListener('click', e => {
+    if (!mobileNavPanel.classList.contains('is-open')) return;
+    if (mobileNavPanel.contains(e.target) || mobileNavToggle.contains(e.target)) return;
+    mobileNavPanel.classList.remove('is-open');
+    mobileNavToggle.setAttribute('aria-expanded', 'false');
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 680) {
+      mobileNavPanel.classList.remove('is-open');
+      mobileNavToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   const host = window.location.hostname;
@@ -1266,17 +1375,28 @@ window.addEventListener('resize', () => { resize(); buildTopo(); });
 
 function buildTopo() {
   topoLines = [];
-  const rows = 32, cols = 26;
+
+  const isMobile = window.innerWidth <= 680;
+  const isTablet = window.innerWidth <= 1024 && window.innerWidth > 680;
+
+  const rows = isMobile ? 18 : isTablet ? 24 : 32;
+  const cols = isMobile ? 18 : isTablet ? 22 : 26;
+
+  const amp1 = isMobile ? 16 : isTablet ? 24 : 35;
+  const amp2 = isMobile ? 10 : isTablet ? 15 : 22;
+  const amp3 = isMobile ? 6 : isTablet ? 10 : 15;
+
   const pts = [];
   for (let r = 0; r < rows; r++) {
     pts[r] = [];
     for (let c = 0; c < cols; c++) {
       pts[r][c] =
-        Math.sin(r * 0.38 + c * 0.29) * 35 +
-        Math.sin(r * 0.17 + c * 0.62) * 22 +
-        Math.sin(r * 0.7 - c * 0.25) * 15;
+        Math.sin(r * 0.30 + c * 0.18) * amp1 +
+        Math.sin(r * 0.14 + c * 0.34) * amp2 +
+        Math.sin(r * 0.42 - c * 0.12) * amp3;
     }
   }
+
   const cw = W / (cols - 1), ch = H / (rows - 1);
   for (let r = 0; r < rows; r++) {
     const seg = [];

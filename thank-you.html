@@ -957,6 +957,84 @@ footer{
 @media(max-width:680px){
   .home-preview-grid{grid-template-columns:1fr;gap:12px}
 }
+
+/* mobile nav */
+.nav-toggle{
+  display:none;
+  width:56px;height:56px;
+  border:1px solid rgba(107,76,42,0.18);
+  background:rgba(242,232,208,0.88);
+  color:var(--sepia);
+  align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:background 0.25s,border-color 0.25s,transform 0.25s;
+}
+.nav-toggle:hover{background:rgba(232,217,181,0.92);border-color:rgba(107,76,42,0.32)}
+.nav-toggle-lines{
+  width:22px;height:16px;position:relative;display:block;
+}
+.nav-toggle-lines span{
+  position:absolute;left:0;right:0;height:2px;background:currentColor;border-radius:999px;
+  transition:transform 0.25s,opacity 0.25s,top 0.25s;
+}
+.nav-toggle-lines span:nth-child(1){top:0}
+.nav-toggle-lines span:nth-child(2){top:7px}
+.nav-toggle-lines span:nth-child(3){top:14px}
+.nav-open .nav-toggle-lines span:nth-child(1){top:7px;transform:rotate(45deg)}
+.nav-open .nav-toggle-lines span:nth-child(2){opacity:0}
+.nav-open .nav-toggle-lines span:nth-child(3){top:7px;transform:rotate(-45deg)}
+
+.mobile-menu{
+  position:fixed;top:68px;left:0;right:0;z-index:490;
+  background:rgba(242,232,208,0.97);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 12px 30px rgba(107,76,42,0.10);
+  padding:0.85rem 6vw 1rem;
+  display:none;
+}
+.mobile-menu.open{display:block}
+.mobile-menu a{
+  display:block;
+  padding:0.95rem 0.2rem;
+  text-decoration:none;
+  font-family:var(--stamp);
+  font-size:0.74rem;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--sepia);
+  border-bottom:1px solid rgba(107,76,42,0.10);
+}
+.mobile-menu a:last-child{border-bottom:none}
+.mobile-menu a.active{color:var(--ink)}
+.mobile-menu a.active::after{content:' — current';font-size:0.62rem;color:var(--gold)}
+
+@media(max-width:680px){
+  .nav-toggle{display:inline-flex}
+  .contact-actions{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .contact-actions .contact-submit,
+  .contact-actions .btn-secondary{
+    width:100%;
+    justify-content:center;
+    text-align:center;
+  }
+  body{padding-bottom:0}
+  footer{
+    position:static;
+    margin-top:0.5rem;
+    box-shadow:none;
+  }
+}
+
+@media(max-width:680px){
+  .loader-topo{opacity:.18}
+  .loader-topo path:nth-child(4),
+  .loader-topo path:nth-child(5){display:none}
+}
+
 </style>
 
 </head>
@@ -982,7 +1060,18 @@ footer{
 <li><a data-page="projects" href="projects.html">Projects</a></li>
 <li><a data-page="contact" href="contact.html">Contact</a></li>
 </ul>
+
+<button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+  <span class="nav-toggle-lines"><span></span><span></span><span></span></span>
+</button>
 </nav>
+<div class="mobile-menu" id="mobileMenu">
+<a data-page="home" href="index.html">Home</a>
+<a data-page="about" href="about.html">About</a>
+<a data-page="projects" href="projects.html">Projects</a>
+<a data-page="contact" href="contact.html">Contact</a>
+</div>
+
 
 <main>
 <section id="contact">
@@ -1051,6 +1140,49 @@ if (cur && curRing) {
 const navEl = document.getElementById('nav');
 if (navEl) navEl.classList.add('solid');
 
+const navToggle = document.getElementById('navToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+
+if (navToggle && mobileMenu) {
+  const syncMenuLinks = () => {
+    mobileMenu.querySelectorAll('a[data-page]').forEach(link => {
+      link.classList.toggle('active', link.dataset.page === currentPage);
+    });
+  };
+
+  const closeMenu = () => {
+    document.body.classList.remove('nav-open');
+    navToggle.setAttribute('aria-expanded', 'false');
+    mobileMenu.classList.remove('open');
+  };
+
+  const openMenu = () => {
+    document.body.classList.add('nav-open');
+    navToggle.setAttribute('aria-expanded', 'true');
+    mobileMenu.classList.add('open');
+  };
+
+  navToggle.addEventListener('click', () => {
+    if (mobileMenu.classList.contains('open')) closeMenu();
+    else openMenu();
+  });
+
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => closeMenu());
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 680) closeMenu();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  syncMenuLinks();
+}
+
+
 const currentPage = document.body.dataset.page;
 const homeTargets = new Set(['home', 'index']);
 
@@ -1101,15 +1233,23 @@ window.addEventListener('resize', () => { resize(); buildTopo(); });
 
 function buildTopo() {
   topoLines = [];
-  const rows = 32, cols = 26;
+  const isMobile = window.innerWidth <= 680;
+  const isTablet = window.innerWidth <= 1024 && window.innerWidth > 680;
+
+  const rows = isMobile ? 18 : isTablet ? 24 : 32;
+  const cols = isMobile ? 18 : isTablet ? 22 : 26;
+  const amp1 = isMobile ? 16 : isTablet ? 24 : 35;
+  const amp2 = isMobile ? 10 : isTablet ? 15 : 22;
+  const amp3 = isMobile ? 6 : isTablet ? 10 : 15;
+
   const pts = [];
   for (let r = 0; r < rows; r++) {
     pts[r] = [];
     for (let c = 0; c < cols; c++) {
       pts[r][c] =
-        Math.sin(r * 0.38 + c * 0.29) * 35 +
-        Math.sin(r * 0.17 + c * 0.62) * 22 +
-        Math.sin(r * 0.7 - c * 0.25) * 15;
+        Math.sin(r * 0.30 + c * 0.18) * amp1 +
+        Math.sin(r * 0.14 + c * 0.34) * amp2 +
+        Math.sin(r * 0.42 - c * 0.12) * amp3;
     }
   }
   const cw = W / (cols - 1), ch = H / (rows - 1);
