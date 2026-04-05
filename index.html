@@ -245,6 +245,15 @@ nav.solid{
 .nav-links a.active{color:var(--ink)}
 .nav-links a.active::after{width:100%;background:var(--gold)}
 
+.mobile-nav-toggle{display:none;align-items:center;justify-content:center;width:44px;height:44px;background:transparent;border:1px solid rgba(107,76,42,0.18);color:var(--sepia);cursor:pointer;transition:background 0.25s,border-color 0.25s,transform 0.25s}
+.mobile-nav-toggle:hover{background:rgba(107,76,42,0.06);border-color:var(--sepia)}
+.mobile-nav-toggle svg{width:18px;height:18px;display:block}
+.mobile-nav-panel{display:none}
+.mobile-nav-list{list-style:none;display:grid;gap:4px}
+.mobile-nav-link{display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:var(--ink);padding:0.95rem 1rem;border:1px solid rgba(107,76,42,0.10);background:rgba(242,232,208,0.92);font-family:var(--stamp);font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase}
+.mobile-nav-link.active{color:var(--ink);border-color:rgba(184,134,11,0.42);background:rgba(232,217,181,0.88)}
+.mobile-nav-link span{font-size:0.72rem;color:var(--sepia);opacity:0.85}
+
 /* generic */
 section{position:relative;z-index:1;padding:5.75rem 8vw;scroll-margin-top:92px}
 section:not(#hero)::before{
@@ -732,11 +741,24 @@ footer{
 }
 @media(max-width:680px){
   .projects-mosaic,.skills-grid,.edu-grid{grid-template-columns:1fr}
-  .nav-links{display:none}
-  body{cursor:auto}
+  body{cursor:auto;padding-bottom:0}
   #cur,#cur-ring{display:none}
+  nav{height:64px;padding:0 6vw}
+  .logo{font-size:0.92rem;max-width:calc(100% - 64px)}
+  .nav-links{display:none}
+  .mobile-nav-toggle{display:inline-flex;flex-shrink:0}
+  .mobile-nav-panel{position:absolute;left:6vw;right:6vw;top:calc(100% + 10px);display:block;opacity:0;pointer-events:none;transform:translateY(-8px);transition:opacity 0.25s ease,transform 0.25s ease}
+  nav.menu-open .mobile-nav-panel{opacity:1;pointer-events:auto;transform:none}
+  .mobile-nav-panel-inner{padding:0.5rem;background:rgba(242,232,208,0.96);backdrop-filter:blur(12px);border:1px solid var(--border);box-shadow:0 10px 28px rgba(107,76,42,0.14)}
   section{padding:4.25rem 6vw}
-  #hero{padding:6rem 6vw 3.25rem}
+  #hero{min-height:auto;padding:5.7rem 6vw 2.8rem;align-items:flex-start}
+  .hero-content{max-width:none}
+  .hero-coordinate{display:block;margin-bottom:1rem}
+  .hero-coordinate::before,.hero-coordinate::after{display:none}
+  .hero-intro{max-width:none;margin-bottom:1.4rem;line-height:1.65}
+  .hero-actions{flex-direction:column;align-items:stretch;gap:0.85rem;max-width:320px}
+  .btn-primary,.btn-secondary{justify-content:center;width:100%}
+  .hero-scroll-hint{display:none}
   .s-title{margin-bottom:1.6rem}
   .about-stats{grid-template-columns:1fr 1fr}
   .about-info-item{align-items:flex-start;flex-direction:column}
@@ -750,8 +772,9 @@ footer{
   .site-connect-icon{width:40px;height:40px}
   .site-connect-icon svg{width:17px;height:17px}
   .site-connect-title{font-size:1rem}
-  body{padding-bottom:86px}
-  footer{padding:1.5rem 6vw}
+  .home-preview-card{min-height:auto;padding:1.3rem 1.2rem 1.2rem}
+  .home-preview-copy{max-width:none}
+  footer{position:static;padding:1.4rem 6vw;margin-top:0.4rem}
 }
 
 /* fake multipage views */
@@ -976,7 +999,7 @@ footer{
   .home-snapshot-actions{justify-content:center}
 }
 @media(max-width:680px){
-  .home-snapshot-section{padding:5.4rem 6vw 3.8rem}
+  .home-snapshot-section{min-height:auto;padding:4.9rem 6vw 3.2rem}
   .home-snapshot-card{padding:1.5rem 1.3rem}
   .home-snapshot-facts,.home-snapshot-placeholders{grid-template-columns:1fr}
   .home-snapshot-title{font-size:1.9rem}
@@ -992,7 +1015,7 @@ footer{
   .home-snapshot-action{grid-column:1/-1;justify-self:start;padding-left:0.15rem}
 }
 @media(max-width:680px){
-  .home-snapshot-section{min-height:88vh;padding:5.2rem 6vw 3.25rem}
+  .home-snapshot-section{min-height:auto;padding:4.9rem 6vw 3.2rem}
   .home-snapshot-shell{padding:0}
   .home-snapshot-card{
     width:min(560px,100%);
@@ -1074,6 +1097,21 @@ footer{
 <li><a data-page="projects" href="projects.html">Projects</a></li>
 <li><a data-page="contact" href="contact.html">Contact</a></li>
 </ul>
+<button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Open navigation menu" aria-controls="mobileNavPanel" aria-expanded="false">
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/>
+</svg>
+</button>
+<div class="mobile-nav-panel" id="mobileNavPanel">
+<div class="mobile-nav-panel-inner">
+<ul class="mobile-nav-list">
+<li><a class="mobile-nav-link" data-page="home" href="index.html">Home <span>→</span></a></li>
+<li><a class="mobile-nav-link" data-page="about" href="about.html">About <span>→</span></a></li>
+<li><a class="mobile-nav-link" data-page="projects" href="projects.html">Projects <span>→</span></a></li>
+<li><a class="mobile-nav-link" data-page="contact" href="contact.html">Contact <span>→</span></a></li>
+</ul>
+</div>
+</div>
 </nav>
 <main>
 <section id="hero">
@@ -1310,7 +1348,7 @@ if (navEl) navEl.classList.add('solid');
 
 const currentPage = document.body.dataset.page;
 
-document.querySelectorAll('.nav-links a[data-page]').forEach(link => {
+document.querySelectorAll('a[data-page]').forEach(link => {
   link.classList.toggle('active', link.dataset.page === currentPage);
 
   if (link.dataset.page === currentPage) {
@@ -1321,10 +1359,40 @@ document.querySelectorAll('.nav-links a[data-page]').forEach(link => {
   }
 });
 
+const mobileNavToggle = document.getElementById('mobileNavToggle');
+const mobileNavPanel = document.getElementById('mobileNavPanel');
+
+function closeMobileMenu() {
+  if (!navEl || !mobileNavToggle) return;
+  navEl.classList.remove('menu-open');
+  mobileNavToggle.setAttribute('aria-expanded', 'false');
+}
+
+if (mobileNavToggle && navEl) {
+  mobileNavToggle.addEventListener('click', () => {
+    const willOpen = !navEl.classList.contains('menu-open');
+    navEl.classList.toggle('menu-open', willOpen);
+    mobileNavToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+  });
+
+  document.addEventListener('click', e => {
+    if (!navEl.contains(e.target)) closeMobileMenu();
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 680) closeMobileMenu();
+  });
+
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => closeMobileMenu());
+  });
+}
+
 const logoLink = document.querySelector('.logo');
 if (logoLink) {
   logoLink.addEventListener('click', e => {
     e.preventDefault();
+    closeMobileMenu();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
