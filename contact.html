@@ -1117,21 +1117,6 @@ if (navEl) navEl.classList.add('solid');
 const currentPage = document.body.dataset.page;
 const homeTargets = new Set(['home', 'index']);
 
-document.querySelectorAll('.nav-links a[data-page]').forEach(link => {
-  link.classList.toggle('active', link.dataset.page === currentPage);
-
-  if (link.dataset.page === currentPage) {
-    link.addEventListener('click', e => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  } else if (homeTargets.has(link.dataset.page)) {
-    link.addEventListener('click', () => {
-      try { sessionStorage.setItem('sb_returning_home', '1'); } catch (error) {}
-    });
-  }
-});
-
 const logoLink = document.querySelector('.logo');
 if (logoLink) {
   logoLink.addEventListener('click', () => {

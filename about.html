@@ -1036,21 +1036,13 @@ footer{
 <li><a data-page="projects" href="projects.html">Projects</a></li>
 <li><a data-page="contact" href="contact.html">Contact</a></li>
 </ul>
-<button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Open navigation" aria-expanded="false" aria-controls="mobileNavPanel">
-<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-<path d="M4 7H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-<path d="M4 12H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-<path d="M4 17H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-</svg>
-</button>
+<button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavPanel"><span></span></button>
 </nav>
 <div class="mobile-nav-panel" id="mobileNavPanel">
-<ul class="mobile-nav-links">
-<li><a data-page="home" href="index.html">Home</a></li>
-<li><a data-page="about" href="about.html">About</a></li>
-<li><a data-page="projects" href="projects.html">Projects</a></li>
-<li><a data-page="contact" href="contact.html">Contact</a></li>
-</ul>
+<a data-page="home" href="index.html">Home</a>
+<a data-page="about" href="about.html">About</a>
+<a data-page="projects" href="projects.html">Projects</a>
+<a data-page="contact" href="contact.html">Contact</a>
 </div>
 <main>
 <section id="about">
@@ -1288,21 +1280,6 @@ if (navEl) navEl.classList.add('solid');
 const currentPage = document.body.dataset.page;
 const homeTargets = new Set(['home', 'index']);
 
-document.querySelectorAll('.nav-links a[data-page]').forEach(link => {
-  link.classList.toggle('active', link.dataset.page === currentPage);
-
-  if (link.dataset.page === currentPage) {
-    link.addEventListener('click', e => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  } else if (homeTargets.has(link.dataset.page)) {
-    link.addEventListener('click', () => {
-      try { sessionStorage.setItem('sb_returning_home', '1'); } catch (error) {}
-    });
-  }
-});
-
 const logoLink = document.querySelector('.logo');
 if (logoLink) {
   logoLink.addEventListener('click', () => {
@@ -1312,36 +1289,21 @@ if (logoLink) {
 
 const mobileNavToggle = document.getElementById('mobileNavToggle');
 const mobileNavPanel = document.getElementById('mobileNavPanel');
-
-document.querySelectorAll('.mobile-nav-links a[data-page]').forEach(link => {
+const allNavLinks = document.querySelectorAll('.nav-links a[data-page], .mobile-nav-panel a[data-page]');
+allNavLinks.forEach(link => {
   link.classList.toggle('active', link.dataset.page === currentPage);
-  if (link.dataset.page === currentPage) {
-    link.addEventListener('click', e => {
-      e.preventDefault();
-      if (mobileNavPanel) mobileNavPanel.classList.remove('is-open');
-      if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'false');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  } else if (homeTargets.has(link.dataset.page)) {
-    link.addEventListener('click', () => {
-      try { sessionStorage.setItem('sb_returning_home', '1'); } catch (error) {}
-    });
-  }
 });
-
 if (mobileNavToggle && mobileNavPanel) {
   mobileNavToggle.addEventListener('click', () => {
-    const isOpen = mobileNavPanel.classList.toggle('is-open');
-    mobileNavToggle.setAttribute('aria-expanded', String(isOpen));
+    const open = mobileNavPanel.classList.toggle('is-open');
+    mobileNavToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
-
-  document.addEventListener('click', e => {
-    if (!mobileNavPanel.classList.contains('is-open')) return;
-    if (mobileNavPanel.contains(e.target) || mobileNavToggle.contains(e.target)) return;
-    mobileNavPanel.classList.remove('is-open');
-    mobileNavToggle.setAttribute('aria-expanded', 'false');
+  mobileNavPanel.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileNavPanel.classList.remove('is-open');
+      mobileNavToggle.setAttribute('aria-expanded', 'false');
+    });
   });
-
   window.addEventListener('resize', () => {
     if (window.innerWidth > 680) {
       mobileNavPanel.classList.remove('is-open');
