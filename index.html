@@ -17,7 +17,6 @@
   }
 
   document.documentElement.classList.add('fonts-loading');
-  document.documentElement.classList.add('is-loading');
 
   let shouldShowHomeLoader = false;
 
@@ -731,6 +730,13 @@ footer{
 @keyframes fadeUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:none}}
 @keyframes scrollPulse{0%,100%{opacity:0.3;transform:scaleY(1)}50%{opacity:0.8;transform:scaleY(1.15)}}
 
+
+@media(max-width:680px){
+  .loader-topo{opacity:.18}
+  .loader-topo path:nth-child(4),
+  .loader-topo path:nth-child(5){display:none}
+}
+
 @media(max-width:1024px){
   .about-hero,.about-panels,.contact-grid,.contact-form-grid{grid-template-columns:1fr;gap:3rem}
   .projects-mosaic{grid-template-columns:1fr 1fr}
@@ -1059,57 +1065,6 @@ footer{
   .home-preview-title{font-size:1rem}
   .home-preview-copy{font-size:0.78rem;line-height:1.55}
 }
-
-
-/* final responsive polish */
-html.is-loading #bg-canvas{opacity:0.18}
-.backdrop-softener{display:none}
-@media(max-width:1024px){
-  html{scroll-padding-top:84px}
-  section{scroll-margin-top:84px}
-  #about,#projects,#contact{padding-top:5.7rem}
-}
-@media(max-width:680px){
-  html{scroll-padding-top:80px}
-  body{padding-bottom:0}
-  section{scroll-margin-top:80px}
-  #hero{min-height:auto;padding:5.35rem 6vw 2.3rem}
-  .hero-content{max-width:none}
-  .hero-coordinate{margin-bottom:0.8rem;font-size:0.64rem;line-height:1.45;gap:10px;flex-wrap:wrap}
-  .hero-h1{font-size:clamp(2.75rem,12vw,4rem);line-height:0.94;margin-bottom:0.55rem}
-  .hero-rule{margin-bottom:0.7rem}
-  .hero-role-lines{margin-bottom:0.4rem}
-  .hero-role-line{font-size:0.9rem;line-height:1.45}
-  .hero-intro{font-size:0.92rem;line-height:1.65;margin-bottom:1.25rem;max-width:none}
-  .hero-actions{gap:0.8rem}
-  .btn-primary,.btn-secondary{width:100%;justify-content:center;padding:13px 22px}
-  .home-snapshot-section{padding:2.4rem 6vw 2.2rem;min-height:auto}
-  .home-snapshot-card{padding:1.35rem 1.15rem}
-  .home-snapshot-portrait{width:102px;height:102px}
-  .home-snapshot-title{font-size:1.75rem;line-height:1.08}
-  .home-snapshot-text{font-size:0.95rem;line-height:1.72}
-  .home-snapshot-fact{min-height:auto;padding:0.9rem 0.9rem 0.82rem}
-  .home-snapshot-actions .btn-secondary{width:100%}
-  .home-preview-section{padding-top:0.2rem;padding-bottom:2rem}
-  .home-preview-card{min-height:auto;padding:1.2rem 1rem 1.08rem}
-  .home-preview-copy{font-size:0.8rem;line-height:1.62}
-  .home-preview-meta{font-size:0.54rem}
-  .site-connect-wrap{padding:0 6vw 1rem}
-  .site-connect{padding:0.55rem 0.7rem 0.7rem}
-  .site-connect-title{margin-bottom:0.55rem}
-  footer{position:static;padding:1rem 6vw 1.1rem;box-shadow:none}
-  .footer-copy{font-size:0.64rem}
-  #bg-canvas{opacity:0.22}
-  #loader .loader-frame{inset:14px}
-  #loader .loader-focus{width:min(420px,80vw);height:min(180px,20vh);top:35.5%;filter:blur(3px)}
-  #loader .loader-compass{width:96px;height:96px;top:30.5%}
-  #loader .loader-center{margin-top:1rem}
-  #loader .loader-name{font-size:clamp(1.05rem,6.2vw,1.45rem);letter-spacing:0.12em}
-  #loader .loader-bar-wrap{width:min(220px,64vw);margin-top:0.85rem}
-  #loader .loader-topo{opacity:0.2}
-  .loader-topo path{stroke-width:1 !important}
-}
-
 </style>
 
 
@@ -1400,10 +1355,7 @@ html.is-loading #bg-canvas{opacity:0.18}
 
 <script>
 const loader = document.getElementById('loader');
-setTimeout(() => {
-  loader.classList.add('hide');
-  document.documentElement.classList.remove('is-loading');
-}, 3200);
+setTimeout(() => loader.classList.add('hide'), 3400);
 
 const cur = document.getElementById('cur');
 const curRing = document.getElementById('cur-ring');
@@ -1504,35 +1456,36 @@ const ctx = canvas.getContext('2d');
 let W, H, topoLines = [];
 
 function resize() {
-  const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
-  W = window.innerWidth;
-  H = window.innerHeight;
-  canvas.width = Math.round(W * ratio);
-  canvas.height = Math.round(H * ratio);
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
-  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
 }
 resize();
 window.addEventListener('resize', () => { resize(); buildTopo(); });
 
 function buildTopo() {
   topoLines = [];
-  const isSmallScreen = window.innerWidth <= 680;
-  const rows = isSmallScreen ? 18 : 32, cols = isSmallScreen ? 16 : 26;
-  const amp1 = isSmallScreen ? 18 : 35;
-  const amp2 = isSmallScreen ? 10 : 22;
-  const amp3 = isSmallScreen ? 7 : 15;
+
+  const isMobile = window.innerWidth <= 680;
+  const isTablet = window.innerWidth <= 1024 && window.innerWidth > 680;
+
+  const rows = isMobile ? 18 : isTablet ? 24 : 32;
+  const cols = isMobile ? 18 : isTablet ? 22 : 26;
+
+  const amp1 = isMobile ? 16 : isTablet ? 24 : 35;
+  const amp2 = isMobile ? 10 : isTablet ? 15 : 22;
+  const amp3 = isMobile ? 6 : isTablet ? 10 : 15;
+
   const pts = [];
   for (let r = 0; r < rows; r++) {
     pts[r] = [];
     for (let c = 0; c < cols; c++) {
       pts[r][c] =
-        Math.sin(r * 0.38 + c * 0.29) * amp1 +
-        Math.sin(r * 0.17 + c * 0.62) * amp2 +
-        Math.sin(r * 0.7 - c * 0.25) * amp3;
+        Math.sin(r * 0.30 + c * 0.18) * amp1 +
+        Math.sin(r * 0.14 + c * 0.34) * amp2 +
+        Math.sin(r * 0.42 - c * 0.12) * amp3;
     }
   }
+
   const cw = W / (cols - 1), ch = H / (rows - 1);
   for (let r = 0; r < rows; r++) {
     const seg = [];
@@ -1545,10 +1498,9 @@ function buildTopo() {
 buildTopo();
 
 function drawGrid() {
-  const isSmallScreen = window.innerWidth <= 680;
-  const cols = isSmallScreen ? 6 : 10, rows = isSmallScreen ? 5 : 8;
-  ctx.strokeStyle = isSmallScreen ? 'rgba(107,76,42,0.04)' : 'rgba(107,76,42,0.06)';
-  ctx.lineWidth = isSmallScreen ? 0.4 : 0.5;
+  const cols = 10, rows = 8;
+  ctx.strokeStyle = 'rgba(107,76,42,0.06)';
+  ctx.lineWidth = 0.5;
   for (let i = 0; i <= cols; i++) {
     const x = (W / cols) * i;
     ctx.beginPath();
@@ -1569,11 +1521,10 @@ function animate() {
   requestAnimationFrame(animate);
   ctx.clearRect(0, 0, W, H);
   drawGrid();
-  const isSmallScreen = window.innerWidth <= 680;
   topoLines.forEach((seg, idx) => {
-    const alpha = isSmallScreen ? (idx % 4 === 0 ? 0.075 : 0.035) : (idx % 5 === 0 ? 0.13 : 0.065);
+    const alpha = idx % 5 === 0 ? 0.13 : 0.065;
     ctx.strokeStyle = `rgba(107,76,42,${alpha})`;
-    ctx.lineWidth = isSmallScreen ? (idx % 4 === 0 ? 0.7 : 0.42) : (idx % 5 === 0 ? 0.9 : 0.5);
+    ctx.lineWidth = idx % 5 === 0 ? 0.9 : 0.5;
     ctx.beginPath();
     seg.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
     ctx.stroke();
